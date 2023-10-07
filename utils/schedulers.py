@@ -37,7 +37,10 @@ def constant_lr(optimizer, args, **kwargs):
 
 def warmup_lr(optimizer, args, **kwargs):
     def _lr_adjuster(epoch):
-        lr = _warmup_lr(args.lr, args.warmup_epochs, epoch)
+        if args.set == 'imagenet':
+            lr = 0.1 * args.lr
+        else:
+            lr = _warmup_lr(args.lr, args.warmup_epochs, epoch)
 
         assign_learning_rate(optimizer, lr)
 
@@ -156,10 +159,11 @@ def imagenet_lr_drops_warmup(optimizer, args, **kwargs):
 
     def _lr_adjuster(epoch):
         if epoch < 10:
-            lr = _warmup_lr(args.lr, 10, epoch)
-        elif (epoch >=10 and epoch < 50):
+            # lr = _warmup_lr(args.lr, 10, epoch)
+            lr = 0.1 * args.lr
+        elif (epoch >=10 and epoch < 40):
             lr = args.lr
-        elif (epoch >= 50) and (epoch < 80):
+        elif (epoch >= 40) and (epoch < 70):
             lr = 0.1 * args.lr
         else:
             lr = (0.1 ** 2) * args.lr
@@ -169,7 +173,6 @@ def imagenet_lr_drops_warmup(optimizer, args, **kwargs):
         return lr
 
     return _lr_adjuster
-
 
 
 
